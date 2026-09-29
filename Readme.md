@@ -272,3 +272,5 @@ Na página do teu fork no GitHub, clica em **Sync fork** → **Update branch**. 
 4. ✅ Fazer **push antes da aula** — o PR tem de estar aberto no momento da apresentação.
 5. ❌ Nunca fazer `git push --force` para a `master`.
 6. ❌ Não submeter binários, executáveis nem pastas de configuração do IDE.
+ 
+ 
