@@ -1,0 +1,14 @@
+﻿PARTIÇÃO p0: registos=125
+PARTIÇÃO p1: registos=92
+PARTIÇÃO p2: registos=114
+PARES ENTRE PARTIÇÕES (A é o registo da partição de menor índice):
+A → B: 16573
+B → A: 15463
+Pares causais: 32036
+Pares concorrentes: 4202
+Vetores iguais: 0
+Concorrentes com L distinto: 3971
+Proporção de concorrentes com L distinto: 0.945026 (94.50%)
+Violações da condição de Lamport: 0
+Vista por (L,k): C:\Users\João\OneDrive - ESTGV\Ambiente de Trabalho\SDT\SD-2026-2027\Sprints\E1-COMINDIR03\ensaios\7c-2-com-processador\vista-lamport.txt
+RESULTADO: OK

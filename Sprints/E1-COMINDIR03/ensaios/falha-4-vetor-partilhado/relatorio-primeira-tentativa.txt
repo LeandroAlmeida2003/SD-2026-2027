@@ -1,0 +1,14 @@
+﻿PARTIÇÃO p0: registos=127
+PARTIÇÃO p1: registos=103
+PARTIÇÃO p2: registos=99
+PARES ENTRE PARTIÇÕES (A é o registo da partição de menor índice):
+A → B: 15729
+B → A: 16051
+Pares causais: 31780
+Pares concorrentes: 4071
+Vetores iguais: 0
+Concorrentes com L distinto: 3833
+Proporção de concorrentes com L distinto: 0.941538 (94.15%)
+Violações da condição de Lamport: 0
+Vista por (L,k): C:\Users\João\OneDrive - ESTGV\Ambiente de Trabalho\SDT\SD-2026-2027\Sprints\E1-COMINDIR03\ensaios\falha-4-vetor-partilhado\vista-lamport.txt
+RESULTADO: OK
