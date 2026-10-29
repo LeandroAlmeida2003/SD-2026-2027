@@ -1,7 +1,0 @@
-﻿Configuração: partição 2 de 3
-Endereço a anunciar: 127.0.0.1
-API IPFS: http://127.0.0.1:5001/api/v0
-Última sequência gravada: 1
-A iniciar subscrição de rep03-in-p2
-Recuperação TCP à escuta no porto 7002
-Entrada terminada por falha: V[2] != seq: 0,0,1 / 2

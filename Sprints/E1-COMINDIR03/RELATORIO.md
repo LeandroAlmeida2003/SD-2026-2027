@@ -30,8 +30,6 @@ Os carimbos coincidem com a Figura 1. Nesta execução, aguardou-se a criação 
 
 Entre partições: 1 par causal, 4 concorrentes, 2 concorrentes com L distinto (50%) e zero violações de Lamport. O par causal é S02 → ALARM-S02: `(0,1,0) < (0,1,1)`.
 
-Dados: [execucao-local](execucao-local/).
-
 ## 7(b) — Rajada sem processador
 
 Comando do produtor: `rajada 300 10`.
@@ -44,8 +42,6 @@ Comando do produtor: `rajada 300 10`.
 - Violações de Lamport: 0.
 
 Sem o processador não são transportadas dependências entre partições. Continua a existir ordem dentro de cada partição, mas os eventos de partições diferentes são concorrentes. A coincidência das contagens de publicações aceites e registos guardados foi observada neste ensaio; não constitui uma garantia geral de entrega.
-
-Relatório: [7b-sem-processador/relatorio.txt](ensaios/7b-sem-processador/relatorio.txt).
 
 ## 7(c) — Três rajadas com processador
 
@@ -69,7 +65,7 @@ Cada execução usou ficheiros novos e o comando `rajada 300 10`.
 
 Cada alarme transporta o conhecimento acumulado das leituras já observadas, incluindo as que não geraram alarmes. Por transitividade, os eventos seguintes na partição que recebe o alarme herdam essas dependências. Por isso, o número de pares causais pode ser muito superior ao número de alarmes: contam-se pares relacionados, não apenas ligações diretas leitura–alarme.
 
-Fontes: [execução 1](ensaios/7c-1-com-processador/relatorio.txt), [execução 2](ensaios/7c-2-com-processador/relatorio.txt) e [amostra preservada da execução 3](ensaios/7c-3-com-processador/amostra-7c/relatorio.txt). A terceira amostra foi preservada antes do ensaio de reinício; é essa amostra que se usa nas médias.
+A terceira amostra foi preservada antes do ensaio de reinício; foi essa amostra que se usou nas médias.
 
 ## 7(d) — Reinício de p2
 
@@ -79,8 +75,6 @@ Fontes: [execução 1](ensaios/7c-1-com-processador/relatorio.txt), [execução 
 | Registo S03, 21.0 após reiniciar p2 | 94 | 126 | (110,92,94) |
 
 O estado foi recuperado do ficheiro. Como a mensagem do produtor trazia L e V a zero, o máximo não reduziu os valores recuperados e apenas a componente de p2 avançou. O analisador terminou com `RESULTADO: OK`, sem violações.
-
-Evidência: [evidencia-7d.txt](ensaios/evidencia-7d.txt). Relatório: [relatorio-7d.txt](ensaios/7c-3-com-processador/relatorio-7d.txt).
 
 ## 7(e) — Escrita na réplica antes da dependência
 
@@ -97,8 +91,6 @@ Compararam-se os valores `escrita(ms)` da própria réplica, não o campo `insta
 
 A réplica respeita a sequência de cada partição, mas não espera pelas dependências de outras partições indicadas nos vetores. Assim, pode escrever o alarme de p1 enquanto a leitura de p0 está atrasada.
 
-Evidência: [evidencia-7e.txt](ensaios/evidencia-7e.txt).
-
 ## 8 — Falhas deliberadas
 
 As variantes foram compiladas em pastas isoladas. Os fontes corretos foram repostos após a compilação de cada variante e antes de preparar a falha seguinte.
@@ -110,8 +102,6 @@ As variantes foram compiladas em pastas isoladas. Os fontes corretos foram repos
 | Reiniciar com L e V a zero, mantendo seq recuperado | A proteção assinalou `V[2] != seq: 0,0,1 / 2`; o novo registo não foi escrito. | Não nos ficheiros: resultado OK. | A inconsistência foi bloqueada antes da persistência; a evidência está no log do líder. |
 | Capturar referência a V sem cópia e serializar fora do monitor | Primeira tentativa: nenhum dos 40 carimbos mudou. Com pausa de teste de 50 ms fora do monitor: 33 dos 37 carimbos mudaram entre captura e envio. | Na tentativa com pausa: 58 violações de Lamport. | A mensagem pode combinar L capturado com um vetor alterado por outra thread. Não observar a corrida numa tentativa não prova segurança. |
 | Produtor N=4, restantes processos N=3 | p1 rejeitou `IN;S02;29.3;0;0,0,0,0`; os três ficheiros mantiveram só os registos iniciais válidos. | Não nos ficheiros: resultado OK. | A dimensão inválida é rejeitada antes de criar um evento ou avançar os relógios. |
-
-Evidências e relatórios: [falha 1](ensaios/falha-1-sem-merge/), [falha 2](ensaios/falha-2-sem-lamport-msg/), [falha 3](ensaios/falha-3-reinicio-zero/), [primeira tentativa da falha 4](ensaios/falha-4-vetor-partilhado/), [falha 4 com pausa](ensaios/falha-4-vetor-partilhado-pausa/) e [falha 5](ensaios/falha-5-dimensao/).
 
 ## 9 — Médias e custo das mensagens
 

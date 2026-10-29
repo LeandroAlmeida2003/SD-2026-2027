@@ -1,6 +1,0 @@
-﻿Origem: amostra-7c da terceira execução do ensaio 7(c).
-processador.log:
-ALARME: S01 p0#30 → p1
-replica-1.log:
-Aplicado: 24;ALARM-S01;28.66784812937839;2026-10-28T22:49:25;31;30,24,20 | escrita(ms)=1793227765415 | p1
-Aplicado: 30;S01;28.66784812937839;2026-10-28T22:49:25;30;30,18,15 | escrita(ms)=1793227765449 | p0
