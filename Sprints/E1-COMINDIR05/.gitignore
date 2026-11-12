@@ -1,0 +1,4 @@
+build/
+dados/
+*.class
+__pycache__/
