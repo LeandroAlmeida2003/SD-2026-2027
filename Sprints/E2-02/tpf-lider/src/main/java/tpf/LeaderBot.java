@@ -8,21 +8,29 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+/** E2-02: prepara o armazenamento local e liga os listeners ao Discord. */
 public final class LeaderBot {
     private LeaderBot() {
     }
 
+    /** Valida configuração, carrega a chave e abre o arquivo antes de receber mensagens. */
     public static void main(String[] args) {
         try {
+            // As credenciais são lidas do ambiente, em vez de ficarem no código.
             String token = requireEnvironmentVariable("DISCORD_TOKEN");
             long guildId = readGuildId();
             Wire.validate();
+            // Guarda os dados na pasta de onde o programa é iniciado.
+            // Voltar a usar essa pasta conserva a chave, o log e os chunks.
             Path pasta = Path.of(".");
             byte[] masterKey = MasterKey.loadOrCreate(pasta.resolve("master.key"));
             Arquivo arquivo = new Arquivo(pasta, masterKey);
+            // Os comandos e o listener de mensagens recebem o mesmo Arquivo.
+            LeaderCommands commands = new LeaderCommands(guildId, arquivo);
             try {
-                connect(token, guildId, arquivo);
+                connect(token, guildId, arquivo, commands);
             } catch (RuntimeException | InterruptedException exception) {
+                commands.close();
                 try {
                     arquivo.close();
                 } catch (IOException closeFailure) {
@@ -30,7 +38,11 @@ public final class LeaderBot {
                 }
                 throw exception;
             }
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> fechar(arquivo), "arquivo-encerramento"));
+            // Ao terminar normalmente, incluindo Ctrl+C, pede para parar rajadas e fechar.
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                commands.close();
+                fechar(arquivo);
+            }, "arquivo-encerramento"));
         } catch (IOException exception) {
             System.err.println("Erro no arquivo local: " + exception.getMessage());
             System.exit(1);
@@ -44,6 +56,7 @@ public final class LeaderBot {
         }
     }
 
+    /** O arquivo tenta selar os registos pendentes antes de libertar os ficheiros. */
     private static void fechar(Arquivo arquivo) {
         try {
             arquivo.close();
@@ -52,18 +65,22 @@ public final class LeaderBot {
         }
     }
 
-    private static void connect(String token, long guildId, Arquivo arquivo) throws InterruptedException {
+    /** Liga o bot, instala os listeners e regista os comandos no servidor configurado. */
+    private static void connect(String token, long guildId, Arquivo arquivo, LeaderCommands commands)
+            throws InterruptedException {
         JDA jda = null;
         boolean connected = false;
         try {
+            // Estes intents permitem receber mensagens e ler o seu conteúdo.
             jda = JDABuilder.createLight(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
-                    .addEventListeners(new LeaderCommands(guildId, arquivo), new ArchiveMessages(guildId, arquivo))
+                    .addEventListeners(commands, new ArchiveMessages(guildId, arquivo))
                     .build();
             jda.awaitReady();
             Guild guild = jda.getGuildById(guildId);
             if (guild == null) {
                 throw new IllegalStateException("O LeaderBot não encontra o servidor indicado em GUILD_ID.");
             }
+            // Publica os comandos slash no servidor escolhido em GUILD_ID.
             guild.updateCommands().addCommands(LeaderCommands.definitions()).complete();
             System.out.printf("LeaderBot ligado ao servidor %s (%s).%n", guild.getName(), guild.getId());
             connected = true;
@@ -79,6 +96,7 @@ public final class LeaderBot {
         }
     }
 
+    /** Converte o ID do servidor para número e rejeita uma configuração inválida. */
     private static long readGuildId() {
         String value = requireEnvironmentVariable("GUILD_ID");
         try {
@@ -88,6 +106,7 @@ public final class LeaderBot {
         }
     }
 
+    /** Impede arrancar quando falta uma variável obrigatória ou está vazia. */
     private static String requireEnvironmentVariable(String name) {
         String value = System.getenv(name);
         if (value == null || value.isBlank()) {
